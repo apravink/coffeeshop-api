@@ -71,12 +71,6 @@ func setAvailibility(drinks Drinks) Drinks {
 		} else {
 			drinks_set[i].changeAvailability(false)
 		}
-
-		// 	if  {
-		// 		drink.Availibility = true
-		// 	} else {
-		// 		drink.Availibility = false
-		// 	}
 	}
 	fmt.Print(drinks_set)
 	return drinks_set
