@@ -9,5 +9,5 @@
 
 - [x] Create a server  
 - [x] Create DB connection
-- []  Create a route to display all  
-- []  Create other routes  
+- [ ]  Create a route to display all  
+- [ ]  Create other routes  
