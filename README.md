@@ -5,6 +5,9 @@
 ---
 * "gopkg.in/mgo.v2"  
 
-## TODO
+## TODO  
 ---
-1. ~~Create Server~~  
+- [x] Create a server  
+- [x] Create DB connection
+- []  Create a route to display all  
+- []  Create other routes  
