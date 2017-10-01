@@ -28,4 +28,4 @@ Availibility - Whether or not the drink is available today
 
 ### Endpoints   
 `GET "/"`- Returns a simple printed message  
-`GET "/all"`- Returns all drinks
+`GET "/drinks"`- Returns all drinks

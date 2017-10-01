@@ -24,7 +24,7 @@ func main() {
 func ensureIndex(s *mgo.Session) {
 	session := s.Copy()
 	defer session.Close()
-	c := session.DB("coffeeshop").C("drinks2")
+	c := session.DB("coffeeshop").C("drinks")
 
 	index := mgo.Index{
 		Key:        []string{"id"},
