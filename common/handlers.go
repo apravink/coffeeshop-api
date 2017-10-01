@@ -16,31 +16,6 @@ const HOST = "localhost:8081"
 const DATABASE = "coffeeshop"
 const COLLECTION = "drinks"
 
-//Handle Requests
-func HandleRequests(s *mgo.Session) {
-
-	session := s.Copy()
-	defer session.Close()
-	my_router := mux.NewRouter().StrictSlash(true)
-
-	my_router.HandleFunc("/", homePage).Methods("GET")
-	my_router.HandleFunc("/drinks", getAllDrinks(session)).Methods("GET")
-	// POST /drinks/
-	my_router.HandleFunc("/drinks/", createDrink(session)).Methods("POST")
-	// GET /drinks/{name}
-	my_router.HandleFunc("/drinks/{name}", drinkByName(session)).Methods("GET")
-	// DELETE /drinks/{name}
-	my_router.HandleFunc("/drinks/{name}", removeDrink(session)).Methods("DELETE")
-
-	// GET /byDate/{date}
-	// GET /byIngredients/:ingredients OPTIONAL
-
-	//
-
-	http.ListenAndServe(HOST, my_router)
-
-}
-
 //Handler Functions
 
 //Static Homepage
@@ -178,31 +153,4 @@ func removeDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusOK)
 	}
-}
-
-//--------------------------------------------------------------------------//
-//Helper Functions
-//--------------------------------------------------------------------------//
-
-//Set availability of drink
-func setAvailibility(drink *Drink, date time.Time) {
-
-	if date.After(drink.StartDate) && date.Before(drink.EndDate) {
-		drink.changeAvailability(true)
-	}
-
-}
-
-//http status response writer
-func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(code)
-	w.Write(json)
-}
-
-//http status error writer
-func ErrorWithJSON(w http.ResponseWriter, message string, code int) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(code)
-	fmt.Fprintf(w, "{message: %q}", message)
 }
