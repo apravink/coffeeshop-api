@@ -12,6 +12,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+const HOST = "localhost:8081"
+const DATABASE = "coffeeshop"
+const COLLECTION = "drinks"
+
 //Handle Requests
 func HandleRequests(s *mgo.Session) {
 
@@ -21,31 +25,36 @@ func HandleRequests(s *mgo.Session) {
 
 	my_router.HandleFunc("/", homePage).Methods("GET")
 	my_router.HandleFunc("/drinks", getAllDrinks(session)).Methods("GET")
-	// GET /drinks/{date}
 	// GET /drinks/{name}
-	// GET /drinks/:ingredients OPTIONAL
+	my_router.HandleFunc("/drinks/{name}", drinkByName(session)).Methods("GET")
 	// POST /drinks/
-	// DELETE /all/drinks/{name}
-	// DELETE /all/drinks/{id}
+	my_router.HandleFunc("/drinks/", createDrink(session)).Methods("POST")
+	// DELETE /drinks/{id}
+
+	// GET /byDate/{date}
+	// GET /byIngredients/:ingredients OPTIONAL
+
 	//
 
-	http.ListenAndServe(":8081", my_router)
+	http.ListenAndServe(HOST, my_router)
 
 }
 
 //Handler Functions
+
+//Static Homepage
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the HomePage!")
 	fmt.Println("Endpoint Hit: homePage")
 }
 
-//Get all drinks
+//Function Wrapper for get all drinks
 func getAllDrinks(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session := s.Copy()
 		defer session.Close()
 
-		c := session.DB("coffeeshop").C("drinks")
+		c := session.DB(DATABASE).C(COLLECTION)
 
 		var all_drinks Drinks
 
@@ -70,6 +79,76 @@ func getAllDrinks(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 }
 
 //Get a drink by name
+func drinkByName(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		session := s.Copy()
+		defer session.Close()
+
+		c := session.DB(DATABASE).C(COLLECTION)
+		//Get params from the call
+		vars := mux.Vars(r)
+		drink_name := vars["name"]
+
+		var drink Drink
+
+		err := c.Find(bson.M{"name": drink_name}).One(&drink)
+		if err != nil {
+			ErrorWithJSON(w, "Drink not Found", http.StatusNotFound)
+			fmt.Print("Failed to find drink: ", err)
+			fmt.Println("")
+			return
+		}
+		if drink.Name == "" {
+			ErrorWithJSON(w, "Drink not found", http.StatusNotFound)
+			return
+		}
+		setAvailibility(&drink, time.Now())
+		respBody, err := json.MarshalIndent(drink, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+		ResponseWithJSON(w, respBody, http.StatusOK)
+
+	}
+}
+
+//Create Drink
+func createDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		var drink Drink
+
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&drink)
+		if err != nil {
+			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			return
+		}
+		drink.ID = bson.NewObjectId()
+		setAvailibility(&drink, time.Now())
+		c := session.DB(DATABASE).C(COLLECTION)
+		err2 := c.Insert(drink)
+		if err2 != nil {
+
+			switch {
+			case mgo.IsDup(err):
+				ErrorWithJSON(w, "Drink already exists!", http.StatusBadRequest)
+				return
+			default:
+				ErrorWithJSON(w, "dunno whut happnd", http.StatusInternalServerError)
+				fmt.Print("Failed to insert drink", err2)
+				return
+			}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Location", r.URL.Path+"/"+string(drink.ID))
+		w.WriteHeader(http.StatusCreated)
+	}
+}
 
 //--------------------------------------------------------------------------//
 //Helper Functions
@@ -84,9 +163,16 @@ func setAvailibility(drink *Drink, date time.Time) {
 
 }
 
-//Response Writer
+//http status response writer
 func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
 	w.Write(json)
+}
+
+//http status error writer
+func ErrorWithJSON(w http.ResponseWriter, message string, code int) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(code)
+	fmt.Fprintf(w, "{message: %q}", message)
 }
