@@ -20,6 +20,7 @@ func main() {
 	common.HandleRequests(session)
 }
 
+//Ensure index is configured correctly
 func ensureIndex(s *mgo.Session) {
 	session := s.Copy()
 	defer session.Close()
