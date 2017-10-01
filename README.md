@@ -10,7 +10,7 @@
 - [x] Create a server  
 - [x] Create DB connection
 - [X] Create a route to display all  
-- [ ] CRUD routes and functions  
+- [x] CRUD routes and functions  
 - [x] Add dateTime constraint    
 - [ ] Filter by ingredient  
 
@@ -29,3 +29,6 @@ Availibility - Whether or not the drink is available today
 ### Endpoints   
 `GET "/"`- Returns a simple printed message  
 `GET "/drinks"`- Returns all drinks
+
+### Wishlist  
+- Validation for create inputs

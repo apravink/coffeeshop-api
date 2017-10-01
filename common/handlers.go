@@ -25,11 +25,12 @@ func HandleRequests(s *mgo.Session) {
 
 	my_router.HandleFunc("/", homePage).Methods("GET")
 	my_router.HandleFunc("/drinks", getAllDrinks(session)).Methods("GET")
-	// GET /drinks/{name}
-	my_router.HandleFunc("/drinks/{name}", drinkByName(session)).Methods("GET")
 	// POST /drinks/
 	my_router.HandleFunc("/drinks/", createDrink(session)).Methods("POST")
-	// DELETE /drinks/{id}
+	// GET /drinks/{name}
+	my_router.HandleFunc("/drinks/{name}", drinkByName(session)).Methods("GET")
+	// DELETE /drinks/{name}
+	my_router.HandleFunc("/drinks/{name}", removeDrink(session)).Methods("DELETE")
 
 	// GET /byDate/{date}
 	// GET /byIngredients/:ingredients OPTIONAL
@@ -139,7 +140,7 @@ func createDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 				ErrorWithJSON(w, "Drink already exists!", http.StatusBadRequest)
 				return
 			default:
-				ErrorWithJSON(w, "dunno whut happnd", http.StatusInternalServerError)
+				ErrorWithJSON(w, "Something went wrong", http.StatusInternalServerError)
 				fmt.Print("Failed to insert drink", err2)
 				return
 			}
@@ -147,6 +148,35 @@ func createDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Location", r.URL.Path+"/"+string(drink.ID))
 		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+//Delete drink
+
+func removeDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		//Get params from the call
+		vars := mux.Vars(r)
+		drink_name := vars["name"]
+
+		c := session.DB(DATABASE).C(COLLECTION)
+
+		err := c.Remove(bson.M{"name": drink_name})
+		if err != nil {
+			switch err {
+			case mgo.ErrNotFound:
+				ErrorWithJSON(w, "Drink not found", http.StatusNotFound)
+				return
+			default:
+				ErrorWithJSON(w, "Something went wrong", http.StatusInternalServerError)
+				return
+			}
+		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
