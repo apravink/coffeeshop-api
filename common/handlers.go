@@ -68,6 +68,14 @@ func getAllDrinks(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 }
 
 //Get a drink by name
+/* Params: s *mgo.Session
+
+Returns: func
+
+Description:Wrapper function factory for a function that gathers the name
+variable from the url and returns a drink from the database if there is
+a match, or a StatusNotFound error
+*/
 func drinkByName(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -103,6 +111,13 @@ func drinkByName(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 }
 
 //Create Drink
+/* Params: s *mgo.Session
+
+Returns: func
+
+Description:Wrapper function factory for a function that creates a new drink
+in the database according to the accompanying JSON payload in its body.
+*/
 func createDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -140,6 +155,14 @@ func createDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 }
 
 //Delete drink from database
+/* Params: s *mgo.Session
+
+Returns: func
+
+Description:Wrapper function factory for a function that gathers the name
+variable from the url and returns a drink from the database if there is
+a match, or a StatusNotFound error
+*/
 
 func removeDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 

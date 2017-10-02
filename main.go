@@ -1,7 +1,7 @@
 package main
 
 import (
-	common "coffeeshop/common"
+	common "coffeeshop-api/common"
 
 	"gopkg.in/mgo.v2"
 )
