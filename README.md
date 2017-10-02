@@ -16,6 +16,8 @@
 
 ## API Documentation    
 
+- Runs on `https://localhost:8081`  
+- Connects to MongoDB running on default port `27017`  
 
 ### Data Model  
 ID - Primary key id  
@@ -25,6 +27,7 @@ StartDate - Date when drink is available
 EndDate - Date after which drink is unavailable  
 ingredients - Array of ingredients   
 Availibility - Whether or not the drink is available today    
+
 
 
 ### Endpoints   
@@ -37,4 +40,5 @@ Availibility - Whether or not the drink is available today
 
 
 ### Wishlist  
-- Validation for create inputs
+- Docker!  
+- Filtering using the ingredients array  
