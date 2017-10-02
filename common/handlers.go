@@ -192,6 +192,13 @@ func removeDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 }
 
 //Get drinks available on a certain date
+/*Returns: func
+
+Description:Wrapper function factory for a function that gathers the name
+variable from the url and returns a drink from the database if there is
+a match, or a StatusNotFound error
+*/
+
 func drinksByDate(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {

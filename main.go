@@ -1,7 +1,7 @@
 package main
 
 import (
-	common "coffeeshop-api/common"
+	common "github.com/apravink/coffeeshop-api/common"
 
 	"gopkg.in/mgo.v2"
 )
