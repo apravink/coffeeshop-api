@@ -17,7 +17,9 @@
 ## API Documentation    
 
 - Runs on `https://localhost:8081`  
-- Connects to MongoDB running on default port `27017`  
+- Connects to MongoDB running on default port `27017`
+- Adding a `dummy.js` file which can be used to seed the database if needed
+  using `mongo dummy.js`
 
 ### Data Model  
 ID - Primary key id  
