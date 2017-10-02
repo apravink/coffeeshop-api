@@ -6,9 +6,11 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
+const DBHOST = "localhost:27017"
+
 func main() {
 
-	session, err := mgo.Dial("localhost")
+	session, err := mgo.Dial(DBHOST)
 	if err != nil {
 		panic(err)
 	}

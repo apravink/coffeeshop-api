@@ -12,17 +12,10 @@
 - [x] Create DB connection
 - [X] Create a route to display all  
 - [x] CRUD routes and functions  
-- [x] Add dateTime constraint    
-- [ ] Filter by ingredient  
+- [x] Add dateTime constraint     
 
 ## API Documentation    
-### Getting Stated  
-- Install and run MongoDB on the default port `27017` using the `mongod` command
-  on your bash/cmd terminal
-- Clone this repository  
-- Navigate to the cloned dirctory and use `go install`  
-- Navigate to your `$GOPATH/bin` directory and run `./coffeeshop`  
-- You can access the API from the endpoint `localhost:8081`  
+
 
 ### Data Model  
 ID - Primary key id  
@@ -35,8 +28,13 @@ Availibility - Whether or not the drink is available today
 
 
 ### Endpoints   
-`GET "/"`- Returns a simple printed message  
-`GET "/drinks"`- Returns all drinks
+`GET "/"`- Returns a simple printed message   
+`GET "/drinks"`- Returns all drinks  
+`GET "/drinks/name"`- Returns a drink with the matching name  
+`GET "/byDate/date"`- Returns drinks that are available on the given date   
+`POST /drinks/` - Adds a new drink to the database   
+`DELETE /drinks/name`- Deletes the drink with the maching name from the db  
+
 
 ### Wishlist  
 - Validation for create inputs
