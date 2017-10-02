@@ -26,8 +26,6 @@ func HandleRequests(s *mgo.Session) {
 	my_router.HandleFunc("/byDate/{date}", drinksByDate(session)).Methods("GET")
 	// GET /byIngredients/:ingredients OPTIONAL
 
-	//
-
 	http.ListenAndServe(HOST, my_router)
 
 }
