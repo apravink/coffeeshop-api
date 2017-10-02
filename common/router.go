@@ -23,7 +23,7 @@ func HandleRequests(s *mgo.Session) {
 	// DELETE /drinks/{name}
 	my_router.HandleFunc("/drinks/{name}", removeDrink(session)).Methods("DELETE")
 	// GET /byDate/{date}
-	// my_router.HandleFunc("/drinks", getDrinksByDate(session)).Methods("GET")
+	my_router.HandleFunc("/byDate/{date}", drinksByDate(session)).Methods("GET")
 	// GET /byIngredients/:ingredients OPTIONAL
 
 	//

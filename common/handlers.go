@@ -16,15 +16,27 @@ const HOST = "localhost:8081"
 const DATABASE = "coffeeshop"
 const COLLECTION = "drinks"
 
+/*--------------------------------------------------------------------*/
 //Handler Functions
-
+/*--------------------------------------------------------------------*/
 //Static Homepage
+/* Params: w <http.ResponseWriter>
+			   r <*http.Request>
+ Description: Writes a simple message to the response
+*/
 func homePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the HomePage!")
 	fmt.Println("Endpoint Hit: homePage")
 }
 
-//Function Wrapper for get all drinks
+//Get All Drinks
+/* Params: s *mgo.Session
+
+Returns: func
+
+Description: Wrapper function factory for a function that returns all the
+drinks in the database, along with their current availability
+*/
 func getAllDrinks(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session := s.Copy()
@@ -34,9 +46,10 @@ func getAllDrinks(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 
 		var all_drinks Drinks
 
+		//Query Mongo for all entries
 		err := c.Find(bson.M{}).All(&all_drinks)
 		if err != nil {
-
+			ErrorWithJSON(w, "Something went wrong", http.StatusInternalServerError)
 			fmt.Println("Failed get all drinks: ", err)
 			return
 		}
@@ -126,7 +139,7 @@ func createDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Delete drink
+//Delete drink from database
 
 func removeDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 
@@ -134,7 +147,7 @@ func removeDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		session := s.Copy()
 		defer session.Close()
 
-		//Get params from the call
+		//Get name from uri
 		vars := mux.Vars(r)
 		drink_name := vars["name"]
 
@@ -152,5 +165,54 @@ func removeDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+//Get drinks available on a certain date
+func drinksByDate(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		//Get date from uri
+		vars := mux.Vars(r)
+		date := vars["date"]
+		time_layout := "2006-01-02"
+		date_utc, _ := time.Parse(time_layout, date)
+		var available_drinks, all_drinks Drinks
+
+		c := session.DB(DATABASE).C(COLLECTION)
+
+		//Grabbing all and filtering. ToDo: Query the DB directly instead
+		err := c.Find(bson.M{}).All(&all_drinks)
+
+		if err != nil {
+			ErrorWithJSON(w, "Something went wrong", http.StatusInternalServerError)
+			fmt.Println("Failed get all drinks: ", err)
+			return
+		}
+
+		//Set availability according to given date
+		for i, _ := range all_drinks {
+
+			setAvailibility(&all_drinks[i], date_utc)
+
+			if all_drinks[i].Availibility == true {
+				available_drinks = append(available_drinks, all_drinks[i])
+			}
+		}
+		if len(available_drinks) == 0 {
+			ErrorWithJSON(w, "Drink not found", http.StatusNotFound)
+			return
+
+		}
+
+		respBody, err := json.MarshalIndent(available_drinks, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
 	}
 }

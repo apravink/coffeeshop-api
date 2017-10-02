@@ -3,7 +3,8 @@
 
 ## Dependencies  
 
-* "gopkg.in/mgo.v2"  
+* "gopkg.in/mgo.v2"
+* "github.com/gorilla/mux"   
 
 ## TODO  
 
@@ -14,8 +15,8 @@
 - [x] Add dateTime constraint    
 - [ ] Filter by ingredient  
 
-## API Documentation  
-
+## API Documentation    
+### Getting Stated
 ### Data Model  
 ID - Primary key id  
 Name - Name of the drink
