@@ -22,7 +22,7 @@ func main() {
 	common.HandleRequests(session)
 }
 
-//Ensure index is configured correctly
+//Check if db and collection exist. If not, create them.
 func ensureIndex(s *mgo.Session) {
 	session := s.Copy()
 	defer session.Close()
@@ -39,4 +39,5 @@ func ensureIndex(s *mgo.Session) {
 	if err != nil {
 		panic(err)
 	}
+	println("Successfully connected to the database")
 }
