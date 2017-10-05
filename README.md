@@ -42,6 +42,6 @@ Availibility - Whether or not the drink is available today
 
 
 ### Wishlist  
-- []Docker!  
-- [x]Filtering using the ingredients array  
-- []Pagination
+- [x] Docker!  
+- [x] Filtering using the ingredients array  
+- [ ] Pagination
