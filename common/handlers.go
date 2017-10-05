@@ -130,6 +130,7 @@ func createDrink(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		err := decoder.Decode(&drink)
 		if err != nil {
 			ErrorWithJSON(w, "Incorrect body", http.StatusBadRequest)
+			fmt.Println("Incorrect format for body")
 			return
 		}
 		drink.ID = bson.NewObjectId()

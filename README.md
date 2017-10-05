@@ -35,8 +35,10 @@ Availibility - Whether or not the drink is available today
 ### Endpoints   
 `GET "/"`- Returns a simple printed message   
 `GET "/drinks"`- Returns all drinks  
-`GET "/drinks/name"`- Returns a drink with the matching name  
-`GET "/byDate/date"`- Returns drinks that are available on the given date   
+`GET "/drinks/{name}"`- Returns a drink with the matching name  
+`GET "/date/{date}"`- Returns drinks that are available on the given date  
+`GET "/ingredients?ingredients=coffee&ingdedients=..."` - Returns drinks which
+contain the ingredients specified in the query. 
 `POST /drinks/` - Adds a new drink to the database   
 `DELETE /drinks/name`- Deletes the drink with the maching name from the db  
 
