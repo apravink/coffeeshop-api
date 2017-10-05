@@ -19,14 +19,14 @@ func setAvailibility(drink *Drink, date time.Time) {
 
 }
 
-//http status response writer
+//Http status response writer
 func ResponseWithJSON(w http.ResponseWriter, json []byte, code int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
 	w.Write(json)
 }
 
-//http status error writer
+//Http status error writer
 func ErrorWithJSON(w http.ResponseWriter, message string, code int) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)

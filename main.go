@@ -10,6 +10,7 @@ const DBHOST = "localhost:27017"
 
 func main() {
 
+	//Connect to DB
 	session, err := mgo.Dial(DBHOST)
 	if err != nil {
 		panic(err)
