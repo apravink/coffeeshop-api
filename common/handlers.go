@@ -246,3 +246,50 @@ func drinksByDate(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
 		ResponseWithJSON(w, respBody, http.StatusOK)
 	}
 }
+
+//Get Drinks by ingredients
+/* Params: s *mgo.Session
+
+Returns: func
+
+Description: Wrapper function factory for a function that returns the drinks
+matching the ingredient list passed in the URL
+*/
+func getDrinksByIngredient(s *mgo.Session) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session := s.Copy()
+		defer session.Close()
+
+		c := session.DB(DATABASE).C(COLLECTION)
+
+		//Get query string array
+		r.ParseForm()
+		ingredients := r.Form["ingredients"]
+		if len(ingredients) < 1 {
+			fmt.Println("No ingredients specified")
+			ErrorWithJSON(w, "No ingredients specified", http.StatusNoContent)
+		}
+
+		var all_drinks Drinks
+
+		//Pass ingredients list and query drinks with ingredients
+		err := c.Find(bson.M{
+			"ingredients": bson.M{"$all": ingredients}}).All(&all_drinks)
+		if err != nil {
+			ErrorWithJSON(w, "Something went wrong", http.StatusInternalServerError)
+			fmt.Println("Failed get all drinks: ", err)
+			return
+		}
+
+		//Set availability of drinks according to current date
+		for i, _ := range all_drinks {
+			setAvailibility(&all_drinks[i], time.Now())
+		}
+		respBody, err := json.MarshalIndent(all_drinks, "", "  ")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		ResponseWithJSON(w, respBody, http.StatusOK)
+	}
+}
